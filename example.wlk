@@ -1,7 +1,7 @@
 class Personaje{
   var fuerza 
   var inteligencia
-  var rol 
+  var rol
 
   method fuerza()= fuerza
   method inteligencia()= inteligencia
@@ -10,7 +10,9 @@ class Personaje{
     rol = nuevo
   } 
 
-  method potencialOfensivo()= (fuerza * 10) + rol.extra() 
+  method potencialOfensivo(){
+    return fuerza * 10 + rol.extra() 
+  } 
   method esGroso()= self.esInteligente() or self.esGrosoEnRol() 
 
   method esInteligente()
@@ -19,18 +21,16 @@ class Personaje{
 
 
 class Orgo  inherits Personaje{
-  override method potencialOfensivo(){return 
-    if (rol =  mago){
-      fuerza * 10 + fuerza * 0.1
+  override method potencialOfensivo(){
+    var potencial= super()
+    if (rol = mago){
+      potencial = potencial + fuerza * 0.1
     }
-    else{
-      super()
-    }
+    return potencial
   }
-
- override method esInteligente()= false 
+  
+  override method esInteligente()= false 
  
-
 } 
 
 class Humano inherits Personaje{
@@ -49,20 +49,20 @@ object guerrero{
 }
 
 object cazador{
-  var tieneMascota= mascota
+  var tieneMascota= Mascota
 
   method cambiarMascota(unaMascota){
     tieneMascota = unaMascota
   }
 
   method extra()= tieneMascota.potencialOfensivo()
-  method exigencia(unPersonaje)= mascota.esLongeva() > 10
+  method exigencia(unPersonaje)= Mascota.esLongeva() > 10
 }
 
-object mascota{
-  var property fuerza= 0
-  var property edad= 0 
-  var property garras= true 
+class Mascota{
+  var property fuerza
+  var property edad
+  var property garras
 
   method esLongeva()= edad > 10
 
@@ -80,6 +80,7 @@ class Aldea{
   var tamaño
   const habitantes= #{}
   
+  method tamaño()= tamaño
   method cantHabitantesMaxima()= tamaño.cantHabitantes()
   method agregarPersonaje(unPersonaje){
     if (habitantes.size() < self.cantHabitantesMaxima()){
@@ -104,7 +105,7 @@ class Aldea{
   }
 }
 
-class invacion{
+class Invacion{
   const habitantes= #{}
   method habitantes()= habitantes
   method tamaño()= habitantes.size()
@@ -114,24 +115,18 @@ class invacion{
 
 class Ciudad{
   const habitantes= #{}
-  var potencialDefensivo= self.potencialOfensivoTotal()
+  var potencialofensivo= self.potencialOfensivoTotal()
   method agregarPersonaje(unPersonaje){
     habitantes.add(unPersonaje)
   }
 
   method potencialOfensivoTotal()= habitantes.sum{h => h.potencialOfensivo()}
   method nosAtacan(unInvasor){
-    if (self.potencialOfensivoTotal() < unInvasor.potencialOfensivoTotal() and self.cantHabitantesMaxima() < unInvasor.tamaño()){
+    if (self.potencialOfensivoTotal() < unInvasor.potencialOfensivoTotal() ){
       habitantes.removeAll()
       habitantes.addAll(unInvasor.diezMejores())
     }
-    else-if (self.potencialOfensivoTotal() < unInvasor.potencialOfensivoTotal() ){
-      habitantes.removeAll()
-      habitantes.addAll(unInvasor.habitantes())
-    }
-    else{
-      potencialDefensivo = potencialDefensivo + 300
-    }
+  
     
   }
 }
